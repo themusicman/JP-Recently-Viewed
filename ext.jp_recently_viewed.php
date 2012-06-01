@@ -61,28 +61,49 @@ class Jp_recently_viewed_ext {
 	 * @return 	string	Newly truncated Link.
 	 */
 	function recently_viewed($obj, $query_result) {
+				
 	if (array_key_exists('recently_viewed',$_COOKIE)) {
-	$recent = unserialize($_COOKIE['recently_viewed']);
+		$recent = unserialize($_COOKIE['recently_viewed']);
 	} else {
-	$recent = array();
+		$recent = array();
 	}
-
 	// Check for our parameter from the exp:channel:entries tag
 	$recently_viewed = $this->EE->TMPL->fetch_param('recently_viewed', '');
 	// if parameter found
-	if ($recently_viewed == 'yes' || $recently_viewed == 'y') {
-	$recent_entries = array();
-		foreach ($query_result as $entry) 
+	if (($recently_viewed == 'yes' || $recently_viewed == 'y')) {
+		
+		
+		if (count($recent) > 0)
 		{
-			if (in_array($entry['entry_id'], $recent)) {
-			$recent_entries[] = $entry;
+			$recent = array_reverse($recent);
+			
+			$recent_entries = array();
+
+			$sql = "SELECT * FROM exp_channel_titles as ct JOIN exp_channel_data as cd ON ct.entry_id = cd.entry_id JOIN exp_members as m ON m.member_id = ct.author_id JOIN exp_channels as c ON c.channel_id = ct.channel_id WHERE ct.entry_id IN (".implode(',', $recent).") ORDER BY FIELD(ct.entry_id, " . implode(',', $recent) . ")";
+
+
+			$query = $this->EE->db->query($sql);
+
+			if ($query->num_rows())
+			{
+				$recent_entries = $query->result_array();
+			}
+			else
+			{	
+				$recent_entries = array();
 			}
 		}
-		return $recent_entries;
-	} else {
-
-	return $query_result;
+		else
+		{
+			$recent_entries = array();
 		}
+		
+		return $recent_entries;
+	} 
+	else
+	{
+		return $query_result;
+	}
 
 	}
 
