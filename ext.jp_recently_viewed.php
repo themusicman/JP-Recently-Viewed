@@ -75,7 +75,7 @@ class Jp_recently_viewed_ext {
 		
 		if ($recent && count($recent) > 0)
 		{
-			$recent = array_reverse($recent);
+			$recent = array_reverse(array_filter($recent));
 			
 			$recent_entries = array();
 
