@@ -62,8 +62,8 @@ class Jp_recently_viewed_ext {
 	 */
 	function recently_viewed($obj, $query_result) {
 				
-	if (array_key_exists('recently_viewed',$_COOKIE)) {
-		$recent = unserialize($_COOKIE['recently_viewed']);
+	if (is_array($_COOKIE) && array_key_exists('recently_viewed', $_COOKIE)) {
+		$recent = @unserialize($_COOKIE['recently_viewed']);
 	} else {
 		$recent = array();
 	}
@@ -73,7 +73,7 @@ class Jp_recently_viewed_ext {
 	if (($recently_viewed == 'yes' || $recently_viewed == 'y')) {
 		
 		
-		if (count($recent) > 0)
+		if ($recent && count($recent) > 0)
 		{
 			$recent = array_reverse($recent);
 			
